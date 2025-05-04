@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>CRUD Mahasiswa</title>
+  <style>
+    table, th, td { border: 1px solid black; border-collapse: collapse; padding: 5px; }
+    input { margin: 5px; }
+  </style>
+</head>
+<body>
+
+  <h2>CRUD Mahasiswa</h2>
+
+  <input type="text" id="nama" placeholder="Nama">
+  <input type="text" id="nim" placeholder="NIM">
+  <button onclick="simpanData()">Simpan</button>
+
+  <h3>Data Mahasiswa</h3>
+  <table id="tabel">
+    <thead>
+      <tr><th>Nama</th><th>NIM</th><th>Aksi</th></tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+
+  <script>
+    let data = JSON.parse(localStorage.getItem("mahasiswa")) || [];
+    let editIndex = -1;
+
+    function tampilkanData() {
+      const tbody = document.querySelector("#tabel tbody");
+      tbody.innerHTML = "";
+      data.forEach((mhs, i) => {
+        tbody.innerHTML += `
+          <tr>
+            <td>${mhs.nama}</td>
+            <td>${mhs.nim}</td>
+            <td>
+              <button onclick="editData(${i})">Edit</button>
+              <button onclick="hapusData(${i})">Hapus</button>
+            </td>
+          </tr>`;
+      });
+    }
+
+    function simpanData() {
+      const nama = document.getElementById("nama").value;
+      const nim = document.getElementById("nim").value;
+
+      if (editIndex === -1) {
+        data.push({ nama, nim });
+      } else {
+        data[editIndex] = { nama, nim };
+        editIndex = -1;
+      }
+
+      localStorage.setItem("mahasiswa", JSON.stringify(data));
+      document.getElementById("nama").value = "";
+      document.getElementById("nim").value = "";
+      tampilkanData();
+    }
+
+    function editData(index) {
+      const mhs = data[index];
+      document.getElementById("nama").value = mhs.nama;
+      document.getElementById("nim").value = mhs.nim;
+      editIndex = index;
+    }
+
+    function hapusData(index) {
+      if (confirm("Yakin ingin hapus?")) {
+        data.splice(index, 1);
+        localStorage.setItem("mahasiswa", JSON.stringify(data));
+        tampilkanData();
+      }
+    }
+
+    tampilkanData();
+  </script>
+
+</body>
+</html>
